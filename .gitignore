@@ -1,1 +1,3 @@
 venv.nosync
+*.pyc
+__pycache__
