@@ -40,18 +40,14 @@ def table_buscar_alumnos(ui):
     con = Coneccion()
     ui.label("Datos de un usuario?")
     usuarios, columnas = con.mostrar_datos('alumnos')
-    print(usuarios)
     alumnos_nombre = {}
     for x in usuarios:
         alumnos_nombre[x.get('id')] = x.get('Nombre') 
-    print(alumnos_nombre)
     select_alumno = ui.select(options=alumnos_nombre,on_change=lambda e: call_db(e.value)).classes('w-full')
     
     def call_db(value):
-        print(value)
         datos = con.mostrar_datos_by_id('alumnos', value)
         ui.label("Estos son los datos")
-        print(datos)
         ui.label(f'El nombre del usuario es :{datos.get('Nombre')}')
         ui.label(f'La direccion del usuario es :{datos.get('Direccion')}')
         ui.label(f'El telefono del usuario es :{datos.get('Telefono')}')
@@ -495,31 +491,28 @@ def table_saca(ui):
             if x == 'id': continue
             columns_name.append({'name': x, 'label': x, 'field': x, 'required': True})
         
-
         for x in rows:
-            libro = (con.mostrar_datos_by_id('libros', x.get('LibroId_id'), 'Titulo'))
-            x['LibroId_id'] = libro
-            libro = (con.mostrar_datos_by_id('libros', x.get('LibroId_id'), 'Titulo'))
-            x['LibroId_id'] = libro
+            alumno = (con.mostrar_datos_by_id('alumnos', x.get('AlumnoId_id'), 'Nombre'))
+            x['AlumnoId_id'] = alumno
+            ejemplar = (con.mostrar_datos_by_id('ejemplares', x.get('EjemplarId_id'), 'Localizacion'))
+            x['EjemplarId_id'] = ejemplar
         table = ui.table(columns=columns_name, rows=rows, row_key='id').classes('w-260')
         
         def add_row() -> None:
-
-            if not select1.value or not select2.value:
+            if not select1.value or not select2.value or not date1.value or not date2.value:
                 ui.notify(f'Faltan datos!!!')
                 return False
-
 
             if not rows:
                 new_id = 1
             else:
                 new_id = max(dx['id'] for dx in rows) + 1
 
-            libro = (con.mostrar_datos_by_id('libros', select2.value, 'Titulo'))
-
-            rows.append({'id': new_id, 'Localizacion': select1.value, 'LibroId_id': libro})
+            alumno_nombre = (con.mostrar_datos_by_id('alumnos', select1.value, 'Nombre'))
+            ejemplar_nombre = (con.mostrar_datos_by_id('ejemplares', select2.value, 'Localizacion'))
+            rows.append({'id': new_id, 'FechaPrestamo': date1.value, 'FechaDevolucion': date2.value, 'AlumnoId_id': alumno_nombre, 'EjemplarId_id': ejemplar_nombre})
             ui.notify(f'Added in table {table_name} new row with ID {new_id} Localizacion {select1.value}, libro {select2.value}')
-            con.inserta_datos_ejemplares(table_name, select1.value, select2.value)
+            con.inserta_datos_saca(table_name, date1.value, date2.value, select1.value, select2.value)
             table.update()
 
 
@@ -545,28 +538,51 @@ def table_saca(ui):
                         @click="() => $parent.$emit('delete', props.row)"/>
                 </q-td>
                        
-                <q-td key="Localizacion" :props="props">
-                    {{ props.row.Localizacion }}
+                <q-td key="FechaPrestamo" :props="props">
+                    {{ props.row.FechaPrestamo }}
                 </q-td>
-                <q-td key="LibroId_id" :props="props">
-                    {{ props.row.LibroId_id }}
+                <q-td key="FechaDevolucion" :props="props">
+                    {{ props.row.FechaDevolucion }}
+                </q-td>
+                <q-td key="AlumnoId_id" :props="props">
+                    {{ props.row.AlumnoId_id }}
+                </q-td>
+                <q-td key="EjemplarId_id" :props="props">
+                    {{ props.row.EjemplarId_id }}
+                </q-td>
             </q-tr>
         ''')
         table.on('delete', delete)
 
 
-        selec_value_libros, columns = con.mostrar_datos('libros', 'id, Titulo')
-        selector2_data = {}
-        for x in selec_value_libros:
-            selector2_data[x.get('id')] = x.get('Titulo') 
+        ejemplares, columns = con.mostrar_datos('ejemplares', 'id, Localizacion, LibroId_id')
+        selector_ejemplares = {}
+        for x in ejemplares:
+            nombre_libro =  con.mostrar_datos_by_id('libros', x.get('LibroId_id'))
+            selector_ejemplares[x.get('id')] = f"{x.get('Localizacion')} {nombre_libro.get('Titulo')}" 
 
+        alumnos, columns = con.mostrar_datos('alumnos', 'id, Nombre')
+        selector_alumnos = {}
+        for x in alumnos:
+            selector_alumnos[x.get('id')] = x.get('Nombre') 
 
 
         
         with ui.grid(columns=2):
-            select1 = ui.input(label='Localizacion', placeholder='start typing', value='')
-            ui.label('Libro:')
-            select2 = ui.select(selector2_data).classes('w-full')
+            with ui.input('Fecha Prestamo') as date1:
+                with date1.add_slot('append'):
+                    ui.icon('edit_calendar').on('click', lambda: menu.open()).classes('cursor-pointer')
+                with ui.menu() as menu:
+                    ui.date().bind_value(date1)
+            with ui.input('Fecha Devolucion') as date2:
+                with date2.add_slot('append'):
+                    ui.icon('edit_calendar').on('click', lambda: menu.open()).classes('cursor-pointer')
+                with ui.menu() as menu:
+                    ui.date().bind_value(date2)
+            ui.label('Ejemplar ID:')
+            select2 = ui.select(selector_ejemplares).classes('w-full')
+            ui.label('Alumno ID:')
+            select1 = ui.select(selector_alumnos).classes('w-full')
             ui.button('Add row', icon='add', color='accent', on_click=add_row).classes('w-full')
 
 
@@ -624,6 +640,11 @@ with ui.left_drawer().classes('bg-green-50') as left_drawer:
             ui.label('Si te quieres conectar ve a esta direccion.')
             link = f'http://{get_ip()}:8888'
             ui.link(link, link)
+        with ui.tab_panel('Saca'):
+            ui.label('En este menu puede agregar, borrar o buscar ejemplares')
+            ui.label('Si te quieres conectar ve a esta direccion.')
+            link = f'http://{get_ip()}:8888'
+            ui.link(link, link)
 # El footer lo pegamos al fondo
 with ui.page_sticky(position='bottom-right', x_offset=10, y_offset=20):
     ui.button(on_click=footer.toggle, icon='contact_support').props('fab')
@@ -651,6 +672,9 @@ with ui.tab_panels(tabs, value='Alumnos').classes('w-full'):
         # Con la UI creamos una tabla
         table_ejemplares(ui)
 
+    with ui.tab_panel('Saca'):
+        # Con la UI creamos una tabla
+        table_saca(ui)
 
 
 # Ejecutamos la UI en el puerto 8888

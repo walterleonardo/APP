@@ -135,11 +135,11 @@ class Coneccion():
         coneccion.close()
 
     # DATOS SACA
-    def inserta_datos_saca(self, tabla, fecha_prestamo, fecha_devolucion, alumno_id, libroid_id):
+    def inserta_datos_saca(self, tabla, fecha_prestamo, fecha_devolucion, alumno_id, ejemplar_id):
         coneccion = self.coneccion.cursor()
 
-        print(f"Insertamos datos de la tabla {tabla} el fecha prestamo {fecha_prestamo} fecha devolucion {fecha_devolucion} libro {libroid_id} Alumno {alumno_id}")
-        request = f'''INSERT INTO '{tabla}' (FechaPrestamo, FechaDevolucion, AlumnoId_Id, EjemplarId_Id) VALUES ('{fecha_prestamo}','{fecha_devolucion}','{alumno_id}',{libroid_id})'''
+        print(f"Insertamos datos de la tabla {tabla} el fecha prestamo {fecha_prestamo} fecha devolucion {fecha_devolucion} libro {ejemplar_id} Alumno {alumno_id}")
+        request = f'''INSERT INTO '{tabla}' (FechaPrestamo, FechaDevolucion, AlumnoId_Id, EjemplarId_Id) VALUES ('{fecha_prestamo}','{fecha_devolucion}','{alumno_id}',{ejemplar_id})'''
         print(request)
         coneccion.execute(request)
         self.coneccion.commit()
