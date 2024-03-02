@@ -36,120 +36,25 @@ def get_ip():
 
 
 
-def table_buscar(ui):
+def table_buscar_alumnos(ui):
     con = Coneccion()
-    ui.label("Que quieres buscar?")
-
     ui.label("Datos de un usuario?")
-
-
-
-
-
     usuarios, columnas = con.mostrar_datos('alumnos')
     print(usuarios)
     alumnos_nombre = {}
     for x in usuarios:
         alumnos_nombre[x.get('id')] = x.get('Nombre') 
     print(alumnos_nombre)
-    select_alumno = ui.select(options=alumnos_nombre,on_change=lambda e: ui.notify(e.value)).classes('w-full')
-    if select_alumno.value:
-        ui.label("buscamos algo del usuario")
-
-    ui.label("Que usuarios tienen un libro en particular?")
-
-    # libros, columnas = con.mostrar_datos('libros')
-    # print(libros)
-    # libros_titulos = {}
-    # for x in libros:
-    #     libros_titulos[x.get('id')] = x.get('Titulo') 
-    # print(libros_titulos)
-    # select_libro = ui.select(libros_titulos).classes('w-full')
-
-
-
-    pass
-        # table_name = 'saca'
-        # con = Coneccion()
-        # rows, columns = con.mostrar_datos(table_name)
-        # columns_name = []
-        # for x in columns:
-        #     if x == 'id': continue
-        #     columns_name.append({'name': x, 'label': x, 'field': x, 'required': True})
-        
-
-        # for x in rows:
-        #     libro = (con.mostrar_datos_by_id('libros', x.get('LibroId_id'), 'Titulo'))
-        #     x['LibroId_id'] = libro
-        #     libro = (con.mostrar_datos_by_id('libros', x.get('LibroId_id'), 'Titulo'))
-        #     x['LibroId_id'] = libro
-        # table = ui.table(columns=columns_name, rows=rows, row_key='id').classes('w-260')
-        
-        # def add_row() -> None:
-
-        #     if not select1.value or not select2.value:
-        #         ui.notify(f'Faltan datos!!!')
-        #         return False
-
-
-        #     if not rows:
-        #         new_id = 1
-        #     else:
-        #         new_id = max(dx['id'] for dx in rows) + 1
-
-        #     libro = (con.mostrar_datos_by_id('libros', select2.value, 'Titulo'))
-
-        #     rows.append({'id': new_id, 'Localizacion': select1.value, 'LibroId_id': libro})
-        #     ui.notify(f'Added in table {table_name} new row with ID {new_id} Localizacion {select1.value}, libro {select2.value}')
-        #     con.inserta_datos_ejemplares(table_name, select1.value, select2.value)
-        #     table.update()
-
-
-        # def delete(e: events.GenericEventArguments) -> None:
-        #     rows[:] = [row for row in rows if row['id'] != e.args['id']]
-        #     ui.notify(f'Deleted row with ID {e.args["id"]}')
-        #     con.elimina_datos(table_name, e.args["id"])
-        #     table.update()
-
-
-        # table.add_slot('header', r'''
-        #     <q-tr :props="props">
-        #         <q-th auto-width />
-        #         <q-th v-for="col in props.cols" :key="col.name" :props="props">
-        #             {{ col.label }}
-        #         </q-th>
-        #     </q-tr>
-        # ''')
-        # table.add_slot('body', r'''
-        #     <q-tr :props="props">
-        #         <q-td auto-width >
-        #             <q-btn size="sm" color="warning" round dense icon="delete"
-        #                 @click="() => $parent.$emit('delete', props.row)"/>
-        #         </q-td>
-                       
-        #         <q-td key="Localizacion" :props="props">
-        #             {{ props.row.Localizacion }}
-        #         </q-td>
-        #         <q-td key="LibroId_id" :props="props">
-        #             {{ props.row.LibroId_id }}
-        #     </q-tr>
-        # ''')
-        # table.on('delete', delete)
-
-
-        # selec_value_libros, columns = con.mostrar_datos('libros', 'id, Titulo')
-        # selector2_data = {}
-        # for x in selec_value_libros:
-        #     selector2_data[x.get('id')] = x.get('Titulo') 
-
-
-
-        
-        # with ui.grid(columns=2):
-        #     select1 = ui.input(label='Localizacion', placeholder='start typing', value='')
-        #     ui.label('Libro:')
-        #     select2 = ui.select(selector2_data).classes('w-full')
-        #     ui.button('Add row', icon='add', color='accent', on_click=add_row).classes('w-full')
+    select_alumno = ui.select(options=alumnos_nombre,on_change=lambda e: call_db(e.value)).classes('w-full')
+    
+    def call_db(value):
+        print(value)
+        datos = con.mostrar_datos_by_id('alumnos', value)
+        ui.label("Estos son los datos")
+        print(datos)
+        ui.label(f'El nombre del usuario es :{datos.get('Nombre')}')
+        ui.label(f'La direccion del usuario es :{datos.get('Direccion')}')
+        ui.label(f'El telefono del usuario es :{datos.get('Telefono')}')
 
 
 
@@ -678,7 +583,6 @@ with ui.header().classes(replace='row items-center') as header:
     ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white')
     # Creamos los tabs superiores
     with ui.tabs() as tabs:
-        ui.tab('Buscar')
         ui.tab('Alumnos')
         ui.tab('Libros')
         ui.tab('Escritores')
@@ -694,29 +598,38 @@ with ui.footer(value=False) as footer:
 with ui.left_drawer().classes('bg-green-50') as left_drawer:
     ui.label('Menu')
     with ui.tab_panels(tabs, value='Alumnos').classes('w-full'):
-        with ui.tab_panel('Buscar'):
+        with ui.tab_panel('Alumnos'):
+            ui.label('En este menu puede agregar, borrar o buscar alumnos')
             ui.label('Si te quieres conectar ve a esta direccion.')
             link = f'http://{get_ip()}:8888'
             ui.link(link, link)
-        with ui.tab_panel('Alumnos'):
-            ui.label('En este menu puede agregar, borrar o buscar alumnos')
+            table_buscar_alumnos(ui)
         with ui.tab_panel('Libros'):
             ui.label('En este menu puede agregar, borrar o buscar libros')
+            ui.label('Si te quieres conectar ve a esta direccion.')
+            link = f'http://{get_ip()}:8888'
+            ui.link(link, link)
         with ui.tab_panel('Escritores'):
             ui.label('En este menu puede agregar, borrar o buscar escritores')
+            ui.label('Si te quieres conectar ve a esta direccion.')
+            link = f'http://{get_ip()}:8888'
+            ui.link(link, link)
         with ui.tab_panel('Escribe'):
             ui.label('En este menu puede agregar, borrar o buscar escribe')
+            ui.label('Si te quieres conectar ve a esta direccion.')
+            link = f'http://{get_ip()}:8888'
+            ui.link(link, link)
         with ui.tab_panel('Ejemplares'):
             ui.label('En este menu puede agregar, borrar o buscar ejemplares')
+            ui.label('Si te quieres conectar ve a esta direccion.')
+            link = f'http://{get_ip()}:8888'
+            ui.link(link, link)
 # El footer lo pegamos al fondo
 with ui.page_sticky(position='bottom-right', x_offset=10, y_offset=20):
     ui.button(on_click=footer.toggle, icon='contact_support').props('fab')
 
 #Estos son los paneles principales y el value es cual es el default 
-with ui.tab_panels(tabs, value='Buscar').classes('w-full'):
-    with ui.tab_panel('Buscar'):
-        # Con la UI creamos una tabla
-        table_buscar(ui)
+with ui.tab_panels(tabs, value='Alumnos').classes('w-full'):
 
     with ui.tab_panel('Alumnos'):
         # Con la UI creamos una tabla

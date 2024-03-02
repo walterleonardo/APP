@@ -37,7 +37,9 @@ class Coneccion():
         coneccion.execute(request)
         datos = coneccion.fetchone()
         coneccion.close()
-        if datos:
+        if datos and campo=='*':
+            return datos
+        elif datos:
             return datos.get(campo)
         return 'NO data'
 
