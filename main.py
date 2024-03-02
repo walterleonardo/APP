@@ -559,7 +559,7 @@ def table_saca(ui):
         selector_ejemplares = {}
         for x in ejemplares:
             nombre_libro =  con.mostrar_datos_by_id('libros', x.get('LibroId_id'))
-            selector_ejemplares[x.get('id')] = f"{x.get('Localizacion')} {nombre_libro.get('Titulo')}" 
+            selector_ejemplares[x.get('id')] = f"{x.get('Localizacion')}" 
 
         alumnos, columns = con.mostrar_datos('alumnos', 'id, Nombre')
         selector_alumnos = {}
