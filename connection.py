@@ -142,3 +142,19 @@ class Coneccion():
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
+
+
+    def mostrar_usuarios_by_libros(self, tabla, usuario, campo='*'):
+        coneccion = self.coneccion.cursor()
+        request = f'''
+        SELECT {campo} FROM {tabla} 
+        INNER JOIN 
+        WHERE id={id}
+
+        '''
+        coneccion.execute(request)
+        datos = coneccion.fetchone()
+        coneccion.close()
+        if datos:
+            return datos.get(campo)
+        return 'NO data'
