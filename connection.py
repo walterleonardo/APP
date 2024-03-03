@@ -214,7 +214,6 @@ class Coneccion():
         FROM ejemplares 
         INNER JOIN libros ON libros.id = ejemplares.libro_id
         WHERE ejemplares.id={id}
-
         '''
         coneccion.execute(request)
         datos = coneccion.fetchone()

@@ -30,11 +30,11 @@ def table_buscar_libros_alquilados(ui):
     def call_db(value):
         datos = con.mostrar_libros_by_ejemplar(value)
         ui.label("Estos son los datos")
-        ui.label(f'El titulo es :{datos.get('titulo')}')
-        ui.label(f'El numero de paginas es :{datos.get('paginas')}')
-        ui.label(f'La editorial es :{datos.get('editorial')}')
-        ui.label(f'El ISBN es :{datos.get('isbn')}')
-        ui.label(f'################################')
+        ui.label(f"El titulo es :{datos.get('titulo')}")
+        ui.label(f"El numero de paginas es :{datos.get('paginas')}")
+        ui.label(f"La editorial es :{datos.get('editorial')}")
+        ui.label(f"El ISBN es :{datos.get('isbn')}")
+        ui.label(f"################################")
 
 
 def table_alumnos(ui):
