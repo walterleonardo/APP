@@ -11,9 +11,9 @@ def Menu(menu):
         print(k, function.__name__)
 
 
-def Alumnos():
-    print("Has seleccionado la opcion Alumnos")
-    table_name = 'Alumnos'
+def alumnos():
+    print("Has seleccionado la opcion alumnos")
+    table_name = 'alumnos'
     con = Coneccion()
     rows, columns = con.mostrar_datos(table_name)
     for x in rows:
@@ -27,7 +27,7 @@ def Alumnos():
         datos = input("Dame el nombre, telefono y direccion, separado por comas\n")
         datos_list = datos.split(',')
         if len(datos_list) == 3:
-            con.inserta_datos('Alumnos', datos_list[0], datos_list[1], datos_list[2])
+            con.inserta_datos_alumnos('alumnos', datos_list[0], datos_list[1], datos_list[2])
             print(f'Alumno agregado...\n')
         else:
             print("Necesito los datos correctos")
@@ -35,9 +35,9 @@ def Alumnos():
     #system('clear')  # Limpia
 
 
-def Autores():
-    print("Has seleccionado la opcion Autores")
-    table_name = 'Autores'
+def autores():
+    print("Has seleccionado la opcion autores")
+    table_name = 'autores'
     con = Coneccion()
     rows, columns = con.mostrar_datos(table_name)
     for x in rows:
@@ -50,17 +50,17 @@ def Autores():
     if (value_input == '2'):
         datos = input("Dame el nombre\n")
         if datos:
-            con.inserta_datos('Autores', datos)
-            print(f'Autor agregado...\n')
+            con.inserta_datos_escritores('autores', datos)
+            print(f'Escritor agregado...\n')
         else:
             print("Necesito los datos correctos")
     print("############")
     #system('clear')  # Limpia
 
 
-def Libros():
-    print("Has seleccionado la opcion Libros") 
-    table_name = 'Libros'
+def libros():
+    print("Has seleccionado la opcion libros") 
+    table_name = 'libros'
     con = Coneccion()
     rows, columns = con.mostrar_datos(table_name)
     for x in rows:
@@ -74,23 +74,23 @@ def Libros():
         datos = input("Dame el titulo, isbn, editorial y paginas, separado por comas\n")
         datos_list = datos.split(',')
         if len(datos_list) == 4:
-            con.inserta_datos('Libros', datos_list[0], datos_list[1], datos_list[2], datos_list[3])
-            print(f'Alumno agregado...\n')
+            con.inserta_datos_libro('libros', datos_list[0], datos_list[1], datos_list[2], datos_list[3])
+            print(f'Libro agregado...\n')
         else:
             print("Necesito los datos correctos")
     print("############")
     #system('clear')  # Limpia
 
-def Escribe():
-    print("Has seleccionado la opcion Libros") 
-    table_name = 'Escribe'
+def escribe():
+    print("Has seleccionado la opcion libros") 
+    table_name = 'escribe'
     con = Coneccion()
-    print("## Autores")
-    rows, columns = con.mostrar_datos("Autores")
+    print("## autores")
+    rows, columns = con.mostrar_datos("autores")
     for x in rows:
         print(x)
-    print("## Libros")
-    rows, columns = con.mostrar_datos("Libros")
+    print("## libros")
+    rows, columns = con.mostrar_datos("libros")
     for x in rows:
         print(x)
     print("###################################")
@@ -106,19 +106,19 @@ def Escribe():
         datos = input("Dame el AutorID y el LibroID, separado por comas\n")
         datos_list = datos.split(',')
         if len(datos_list) == 2:
-            con.inserta_datos('Escribe', datos_list[0], datos_list[1])
-            print(f'Alumno agregado...\n')
+            con.inserta_datos_escribe('escribe', datos_list[0], datos_list[1])
+            print(f'Escribe agregado...\n')
         else:
             print("Necesito los datos correctos")
     print("############")
     #system('clear')  # Limpia
 
-def Ejemplares():
+def ejemplares():
     print("Has seleccionado la opcion Ejemplar") 
-    table_name = 'Ejemplares'
+    table_name = 'ejemplares'
     con = Coneccion()
-    print("## Libros")
-    rows, columns = con.mostrar_datos("Libros")
+    print("## libros")
+    rows, columns = con.mostrar_datos("libros")
     for x in rows:
         print(x)
     print("###################################")
@@ -134,24 +134,24 @@ def Ejemplares():
         datos = input("Dame el Localizacion y el LibroID, separado por comas\n")
         datos_list = datos.split(',')
         if len(datos_list) == 2:
-            con.inserta_datos('Ejemplares', datos_list[0], datos_list[1])
+            con.inserta_datos_ejemplares('ejemplares', datos_list[0], datos_list[1])
             print(f'Alumno agregado...\n')
         else:
             print("Necesito los datos correctos")
     print("############")
     #system('clear')  # Limpia
 
-def Saca():
+def saca():
     print("Has seleccionado la opcion Ejemplar") 
-    table_name = 'Saca'
+    table_name = 'saca'
     con = Coneccion()
     print("## Ejemplar")
-    rows, columns = con.mostrar_datos("Ejemplares")
+    rows, columns = con.mostrar_datos("ejemplares")
     for x in rows:
         print(x)
     print("###################################")
-    print("## Alumnos")
-    rows, columns = con.mostrar_datos("Alumnos")
+    print("## alumnos")
+    rows, columns = con.mostrar_datos("alumnos")
     for x in rows:
         print(x)
     print("###################################")
@@ -167,7 +167,7 @@ def Saca():
         datos = input("Dame el EjemplarID y el AlumnoID, Fecha de salida y fecha de entrada, separado por comas\n")
         datos_list = datos.split(',')
         if len(datos_list) == 4:
-            con.inserta_datos('Ejemplares', datos_list[0], datos_list[1], datos_list[2], datos_list[3])
+            con.inserta_datos_saca('ejemplares', datos_list[0], datos_list[1], datos_list[2], datos_list[3])
             print(f'Alumno agregado...\n')
         else:
             print("Necesito los datos correctos")
@@ -182,7 +182,7 @@ def Salir():
 
 
 def main():
-    functions_names = [Alumnos, Autores, Libros, Escribe, Ejemplares, Saca, Salir]
+    functions_names = [alumnos, autores, libros, escribe, ejemplares, saca, Salir]
     menu_items = dict(enumerate(functions_names, start=1))
 
     while True:

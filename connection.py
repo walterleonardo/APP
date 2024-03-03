@@ -4,6 +4,12 @@ import sqlite3
 class Coneccion():
     def __init__(self) -> None:
         self.coneccion = sqlite3.connect('./db.sqlite3')
+        self.create_database_alumnos(self.coneccion)
+        self.create_database_libros(self.coneccion)
+        self.create_database_autores(self.coneccion)
+        self.create_database_escribe(self.coneccion)
+        self.create_database_ejemplares(self.coneccion)
+        self.create_database_saca(self.coneccion)
         # Convertir resultado en diccionario
         def row_to_dict(cursor: sqlite3.Cursor, row: sqlite3.Row) -> dict:
             data = {}
@@ -11,6 +17,82 @@ class Coneccion():
                 data[col[0]] = row[idx]
             return data
         self.coneccion.row_factory = row_to_dict
+
+        
+    def create_database_alumnos(self, coneccion):
+        c = coneccion.cursor()
+        sql = '''CREATE TABLE IF NOT EXISTS alumnos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        telefono TEXT,
+        direccion TEXT
+        )'''
+        c.execute(sql)
+        coneccion.commit()
+
+    def create_database_libros(self, coneccion):
+        c = coneccion.cursor()
+        sql = '''CREATE TABLE IF NOT EXISTS libros (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        isbn INTEGER,
+        editorial TEXT,
+        paginas INTEGER
+        )'''
+        c.execute(sql)
+        coneccion.commit()
+
+    def create_database_autores(self, coneccion):
+        c = coneccion.cursor()
+        sql = '''CREATE TABLE IF NOT EXISTS autores (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL
+        )'''
+        c.execute(sql)
+        coneccion.commit()
+
+    def create_database_escribe(self, coneccion):
+        c = coneccion.cursor()
+        sql = '''CREATE TABLE IF NOT EXISTS escribe (
+        id integer PRIMARY KEY AUTOINCREMENT,
+        autor_id INTEGER NOT NULL,
+        libro_id INTEGER NOT NULL,
+        FOREIGN KEY(autor_id) REFERENCES autores(id) ON UPDATE SET NULL ON DELETE SET NULL,
+        FOREIGN KEY(libro_id) REFERENCES libros(id) ON UPDATE SET NULL ON DELETE SET NULL
+        )'''
+        c.execute(sql)
+        coneccion.commit()
+
+    def create_database_ejemplares(self, coneccion):
+        c = coneccion.cursor()
+        sql = '''CREATE TABLE IF NOT EXISTS ejemplares (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        localizacion TEXT NOT NULL,
+        libro_id INTEGER NOT NULL,
+        FOREIGN KEY(libro_id) REFERENCES libros(id) ON UPDATE SET NULL ON DELETE SET NULL
+        )'''
+        c.execute(sql)
+        coneccion.commit()
+
+    def create_database_saca(self, coneccion):
+        c = coneccion.cursor()
+        sql = '''CREATE TABLE IF NOT EXISTS saca (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fecha_prestamo DATE NOT NULL,
+        fecha_devolucion DATE NOT NULL,
+        alumno_id INTEGER,
+        ejemplar_id INTEGER,
+        FOREIGN KEY(alumno_id) REFERENCES alumnos(id) ON UPDATE SET NULL ON DELETE SET NULL,
+        FOREIGN KEY(ejemplar_id) REFERENCES ejemplares(id) ON UPDATE SET NULL ON DELETE SET NULL
+        )'''
+        c.execute(sql)
+        coneccion.commit()
+
+    def clear_database(coneccion, table_name):
+        c = coneccion.cursor()
+        sql = 'drop table ' + table_name
+        c.execute(sql)
+        coneccion.commit()
 
     def mostrar_datos(self, tabla, campo='*'):
         coneccion = self.coneccion.cursor()
@@ -44,37 +126,19 @@ class Coneccion():
         return 'NO data'
 
 
-    
-    # # DATOS ESPECIFICOS
-    # def inserta_datos(self, tabla, nombre, telefono, direccion):
-    #     coneccion = self.coneccion.cursor()
-    #     print(f"Insertamos datos de la tabla {tabla} el dato {nombre}")
-    #     request = f'''INSERT INTO {tabla} (Nombre, Telefono, Direccion) VALUES ('{nombre}','{telefono}','{direccion}')'''
-    #     coneccion.execute(request)
-    #     self.coneccion.commit()
-    #     coneccion.close()
-
-    # def actualiza_datos(self, tabla, nombre, telefono, direccion, id):
-    #     coneccion = self.coneccion.cursor()
-    #     print(f"Actualizamos datos de la tabla {tabla} el dato {id}")
-    #     request = f'''UPDATE '{tabla}' SET 'Nombre'='{nombre}', 'Telefono'='{telefono}', 'Direccion'='{direccion}' WHERE id={id} '''
-    #     coneccion.execute(request)
-    #     self.coneccion.commit()
-    #     coneccion.close()
-
     # DATOS ALUMNOS
     def inserta_datos_alumnos(self, tabla, nombre, telefono, direccion):
         coneccion = self.coneccion.cursor()
         print(f"Insertamos datos de la tabla {tabla} el dato {nombre}")
-        request = f'''INSERT INTO {tabla} (Nombre, Telefono, Direccion) VALUES ('{nombre}','{telefono}','{direccion}')'''
+        request = f'''INSERT INTO {tabla} (nombre, telefono, direccion) VALUES ('{nombre}','{telefono}','{direccion}')'''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
 
     def actualiza_datos_alumnos(self, tabla, nombre, telefono, direccion, id):
         coneccion = self.coneccion.cursor()
-        print(f"Actualizamos datos de la tabla {tabla} el dato {id}")
-        request = f'''UPDATE '{tabla}' SET 'Nombre'='{nombre}', 'Telefono'='{telefono}', 'Direccion'='{direccion}' WHERE id={id} '''
+        print(f"Actualizamos datos de la tabla {tabla} el dato {id} {nombre} {telefono} {direccion}")
+        request = f'''UPDATE '{tabla}' SET 'nombre'='{nombre}', 'telefono'='{telefono}', 'direccion'='{direccion}' WHERE id={id} '''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
@@ -83,7 +147,7 @@ class Coneccion():
     def inserta_datos_escritores(self, tabla, nombre):
         coneccion = self.coneccion.cursor()
         print(f"Insertamos datos de la tabla {tabla} el dato {nombre}")
-        request = f'''INSERT INTO {tabla} (Nombre) VALUES ('{nombre}')'''
+        request = f'''INSERT INTO {tabla} (nombre) VALUES ('{nombre}')'''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
@@ -91,7 +155,7 @@ class Coneccion():
     def actualiza_datos_escritores(self, tabla, nombre, id):
         coneccion = self.coneccion.cursor()
         print(f"Actualizamos datos de la tabla {tabla} el dato {id}")
-        request = f'''UPDATE '{tabla}' SET 'Nombre'='{nombre}' WHERE id={id} '''
+        request = f'''UPDATE '{tabla}' SET 'nombre'='{nombre}' WHERE id={id} '''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
@@ -100,7 +164,7 @@ class Coneccion():
     def inserta_datos_libro(self, tabla, titulo, isbn, editorial, paginas):
         coneccion = self.coneccion.cursor()
         print(f"Insertamos datos de la tabla {tabla} el dato {titulo}")
-        request = f'''INSERT INTO {tabla} (Titulo, ISBN, Editorial, Paginas) VALUES ('{titulo}','{isbn}','{editorial}','{paginas}')'''
+        request = f'''INSERT INTO {tabla} (titulo, isbn, editorial, paginas) VALUES ('{titulo}','{isbn}','{editorial}','{paginas}')'''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
@@ -108,28 +172,26 @@ class Coneccion():
     def actualiza_datos_libro(self, tabla, titulo, isbn, editorial, paginas, id):
         coneccion = self.coneccion.cursor()
         print(f"Actualizamos datos de la tabla {tabla} el dato {id}")
-        request = f'''UPDATE '{tabla}' SET 'Titulo'='{titulo}', 'ISBN'='{isbn}', 'Editorial'='{editorial}', 'Paginas'='{paginas}' WHERE id={id} '''
+        request = f'''UPDATE '{tabla}' SET 'titulo'='{titulo}', 'isbn'='{isbn}', 'editorial'='{editorial}', 'paginas'='{paginas}' WHERE id={id} '''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
 
     # DATOS ESCRIBE
-    def inserta_datos_escribe(self, tabla, autorid_id, libroid_id):
+    def inserta_datos_escribe(self, tabla, autor_id, libro_id):
         coneccion = self.coneccion.cursor()
-        print(f"Insertamos datos de la tabla {tabla} el id {autorid_id} autor {autorid_id} libro {libroid_id}")
-        request = f'''INSERT INTO '{tabla}' (AutorId_Id, LibroId_Id) VALUES ({autorid_id},{libroid_id})'''
-        print(request)
+        print(f"Insertamos datos de la tabla {tabla} el id {autor_id} autor {autor_id} libro {libro_id}")
+        request = f'''INSERT INTO '{tabla}' (autor_id, libro_id) VALUES ({autor_id},{libro_id})'''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
 
     # DATOS EJEMPLARES
-    def inserta_datos_ejemplares(self, tabla, localizacion, libroid_id):
+    def inserta_datos_ejemplares(self, tabla, localizacion, libro_id):
         coneccion = self.coneccion.cursor()
 
-        print(f"Insertamos datos de la tabla {tabla} el id {localizacion} localizacion {localizacion} libro {libroid_id}")
-        request = f'''INSERT INTO '{tabla}' (Localizacion, LibroId_Id) VALUES ('{localizacion}',{libroid_id})'''
-        print(request)
+        print(f"Insertamos datos de la tabla {tabla} el id {localizacion} localizacion {localizacion} libro {libro_id}")
+        request = f'''INSERT INTO '{tabla}' (localizacion, libro_id) VALUES ('{localizacion}',{libro_id})'''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
@@ -139,8 +201,7 @@ class Coneccion():
         coneccion = self.coneccion.cursor()
 
         print(f"Insertamos datos de la tabla {tabla} el fecha prestamo {fecha_prestamo} fecha devolucion {fecha_devolucion} libro {ejemplar_id} Alumno {alumno_id}")
-        request = f'''INSERT INTO '{tabla}' (FechaPrestamo, FechaDevolucion, AlumnoId_Id, EjemplarId_Id) VALUES ('{fecha_prestamo}','{fecha_devolucion}','{alumno_id}',{ejemplar_id})'''
-        print(request)
+        request = f'''INSERT INTO '{tabla}' (fecha_prestamo, fecha_devolucion, alumno_id, ejemplar_id) VALUES ('{fecha_prestamo}','{fecha_devolucion}','{alumno_id}',{ejemplar_id})'''
         coneccion.execute(request)
         self.coneccion.commit()
         coneccion.close()
