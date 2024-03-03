@@ -207,17 +207,16 @@ class Coneccion():
         coneccion.close()
 
 
-    def mostrar_usuarios_by_libros(self, tabla, usuario, campo='*'):
+    def mostrar_libros_by_ejemplar(self, id):
         coneccion = self.coneccion.cursor()
         request = f'''
-        SELECT {campo} FROM {tabla} 
-        INNER JOIN 
-        WHERE id={id}
+        SELECT libros.titulo, libros.editorial, libros.paginas, libros.isbn
+        FROM ejemplares 
+        INNER JOIN libros ON libros.id = ejemplares.libro_id
+        WHERE ejemplares.id={id}
 
         '''
         coneccion.execute(request)
         datos = coneccion.fetchone()
         coneccion.close()
-        if datos:
-            return datos.get(campo)
-        return 'NO data'
+        return datos

@@ -18,7 +18,23 @@ def get_ip():
         s.close()
     return IP
 
+def table_buscar_libros_alquilados(ui):
+    con = Coneccion()
+    ui.label("Datos del ejemplar:")
+    datos, columnas = con.mostrar_datos('ejemplares')
+    datos_id = {}
+    for x in datos:
+        datos_id[x.get('id')] = x.get('id')
+    select_alumno = ui.select(options=datos_id, on_change=lambda e: call_db(e.value)).classes('w-full')
 
+    def call_db(value):
+        datos = con.mostrar_libros_by_ejemplar(value)
+        ui.label("Estos son los datos")
+        ui.label(f'El titulo es :{datos.get('titulo')}')
+        ui.label(f'El numero de paginas es :{datos.get('paginas')}')
+        ui.label(f'La editorial es :{datos.get('editorial')}')
+        ui.label(f'El ISBN es :{datos.get('isbn')}')
+        ui.label(f'################################')
 
 
 def table_alumnos(ui):
@@ -459,8 +475,7 @@ def table_ejemplares(ui):
         select2 = ui.select(selector2_data).classes('w-full')
         ui.button('Add row', icon='add', color='accent',
                   on_click=add_row).classes('w-full')
-    # with ui.card().tight():
-    #     table_buscar_escribe(ui)
+
 
 @ui.refreshable
 def table_saca(ui):
@@ -583,7 +598,8 @@ def table_saca(ui):
         select1 = ui.select(selector_alumnos).classes('w-full')
         ui.button('Add row', icon='add', color='accent',
                   on_click=add_row).classes('w-full')
-
+    with ui.card().tight():
+        table_buscar_libros_alquilados(ui)
 
 # NICEGUI ZONE
 # Creamos la cabecera.
