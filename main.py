@@ -19,23 +19,6 @@ def get_ip():
     return IP
 
 
-def table_buscar_escribe(ui):
-    con = Coneccion()
-    ui.label("Datos de un usuario?")
-    usuarios, columnas = con.mostrar_datos('alumnos')
-    alumnos_nombre = {}
-    for x in usuarios:
-        alumnos_nombre[x.get('id')] = x.get('nombre')
-    select_alumno = ui.select(
-        options=alumnos_nombre, on_change=lambda e: call_db(e.value)).classes('w-full')
-
-    def call_db(value):
-        datos = con.mostrar_datos_by_id('alumnos', value)
-        ui.label("Estos son los datos")
-        ui.label(f'El nombre del usuario es :{datos.get('nombre')}')
-        ui.label(f'La direccion del usuario es :{datos.get('direccion')}')
-        ui.label(f'El telefono del usuario es :{datos.get('telefono')}')
-        ui.label(f'El telefono del usuario es :{datos.get('telefono')}')
 
 
 def table_alumnos(ui):
@@ -343,8 +326,7 @@ def table_escribe(ui):
         libro = (con.mostrar_datos_by_id('libros', select2.value, 'titulo'))
 
         rows.append({'id': new_id, 'autor_id': autor, 'libro_id': libro})
-        ui.notify(f'Added in table {table_name} new row with ID {
-                  new_id} autor {autor}, libro {libro}')
+        ui.notify(f'Added in table {table_name} new row with ID {new_id} autor {autor}, libro {libro}')
         con.inserta_datos_escribe(table_name, select1.value, select2.value)
         table.update()
 
@@ -428,8 +410,7 @@ def table_ejemplares(ui):
 
         rows.append(
             {'id': new_id, 'localizacion': select1.value, 'libro_id': libro})
-        ui.notify(f'Added in table {table_name} new row with ID {
-                  new_id} localizacion {select1.value}, libro {select2.value}')
+        ui.notify(f'Added in table {table_name} new row with ID {new_id} localizacion {select1.value}, libro {select2.value}')
         con.inserta_datos_ejemplares(table_name, select1.value, select2.value)
         table.update()
 
@@ -529,8 +510,7 @@ def table_saca(ui):
         
 
 
-        ui.notify(f'Added in table {table_name} new row with ID {
-                  new_id} localizacion {select1.value}, libro {select2.value}')
+        ui.notify(f'Added in table {table_name} new row with ID {new_id} localizacion {select1.value}, libro {select2.value}')
         con.inserta_datos_saca(table_name, date1.value,
                                date2.value, select1.value, select2.value)
         table.update()
